@@ -20,6 +20,7 @@ router.post("/", (req: any, res: any) => {
     firstname,
     surname,
     orderDescription,
+    status: "NEW",
     orderedProducts: [],
   };
   orders.push(order);
@@ -38,6 +39,24 @@ router.post("/:orderId/products", (req: any, res: any) => {
     quantity: product.quantity,
     price: product.price,
   });
+  res.send(order);
+});
+
+router.put("/:orderId/status", (req: any, res: any) => {
+  const id = Number(req.params.orderId);
+  const { status } = req.body;
+  const order = orders.find((o) => o.id === id);
+  // dla if
+  const validStatuses = [
+    "NEW",
+    "CONFIRMED",
+    "CANCELLED",
+    "IN_PREPARATION",
+    "READY",
+    "DELIVERED",
+  ];
+  order.status = status;
+
   res.send(order);
 });
 

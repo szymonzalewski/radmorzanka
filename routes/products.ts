@@ -1,6 +1,7 @@
 const { generateProducts } = require("./mocks/fakeProducts");
 const express = require("express");
 const router = express.Router();
+import type { Product } from "../types/typeProducts";
 
 const products = generateProducts(10);
 
@@ -9,12 +10,14 @@ router.get("/", (req: any, res: any) => {
 });
 
 router.get("/:id", (req: any, res: any) => {
-  const product = products.find((p: any) => p.id === parseInt(req.params.id));
+  const product: Product = products.find(
+    (p: any) => p.id === parseInt(req.params.id)
+  );
   res.send(product);
 });
 
 router.post("/", (req: any, res: any) => {
-  const product = {
+  const product: Product = {
     id: products.length + 1,
     name: req.body.name,
     quantity: req.body.quantity,
