@@ -34,7 +34,7 @@ router.put("/:id", async (req: any, res: any) => {
   const { name, quantity, price } = req.body;
   const product = await db.oneOrNone(
     "UPDATE products SET name = $1, quantity = $2, price = $3 WHERE id = $4 RETURNING id, name, quantity, price;",
-    [name, quantity, price]
+    [name, quantity, price, id]
   );
 
   res.send(product);
