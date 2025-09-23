@@ -2,6 +2,7 @@ const express = require("express");
 const router = express.Router();
 const { generateProducts } = require("./mocks/fakeProducts");
 const products = generateProducts(10);
+const db = require("../db");
 
 const orders: any[] = [];
 
