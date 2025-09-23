@@ -10,4 +10,11 @@ function auth(req: any, res: any, next: any) {
   next();
 }
 
-module.exports = auth;
+function requireAdmin(req: any, res: any, next: any) {
+  if (req.user?.role !== "admin") {
+    return res.status(403).json({ message: "Dostęp tylko dla administratora" });
+  }
+  next();
+}
+
+module.exports = { auth, requireAdmin };

@@ -1,11 +1,12 @@
 const express = require("express");
 const router = express.Router();
 const users = require("./usersShare");
-const auth = require("../auth/authMiddleware");
+const { auth, requireAdmin } = require("../auth/authMiddleware");
 const db = require("../db");
 
-router.get("/", auth, (req: any, res: any) => {
-  res.send(users);
+router.get("/", auth, requireAdmin, async (req: any, res: any) => {
+  const users = await db.any("SELECT * FROM users;");
+  res.json({ users });
 });
 
 module.exports = router;

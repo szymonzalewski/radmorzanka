@@ -1,10 +1,7 @@
-// const { generateProducts } = require("./mocks/fakeProducts");
 const express = require("express");
 const router = express.Router();
-import type { Product } from "../types/typeProducts";
-const db = require("../db");
 
-// const products = generateProducts(10);
+const db = require("../db");
 
 router.get("/", async (req: any, res: any) => {
   const products = await db.any("SELECT * FROM products;");
