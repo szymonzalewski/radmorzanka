@@ -4,6 +4,7 @@ const jwt = require("jsonwebtoken");
 const JWT_SECRET = "supersecret";
 const bcrypt = require("bcrypt");
 const users = require("./usersShare");
+const db = require("../db");
 
 router.post("/", async (req: any, res: any) => {
   const { email, password } = req.body ?? {};

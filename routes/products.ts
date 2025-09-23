@@ -1,47 +1,53 @@
-const { generateProducts } = require("./mocks/fakeProducts");
+// const { generateProducts } = require("./mocks/fakeProducts");
 const express = require("express");
 const router = express.Router();
 import type { Product } from "../types/typeProducts";
+const db = require("../db");
 
-const products = generateProducts(10);
+// const products = generateProducts(10);
 
-router.get("/", (req: any, res: any) => {
-  res.send(products);
+router.get("/", async (req: any, res: any) => {
+  const products = await db.any("SELECT * FROM products;");
+  res.json({ products });
 });
 
-router.get("/:id", (req: any, res: any) => {
-  const product: Product = products.find(
-    (p: any) => p.id === parseInt(req.params.id)
+router.get("/:id", async (req: any, res: any) => {
+  const id = Number(req.params.id);
+  const product = await db.oneOrNone("SELECT * FROM products WHERE id=$1", [
+    id,
+  ]);
+  res.json({ product });
+});
+
+router.post("/", async (req: any, res: any) => {
+  const { name, quantity, price } = req.body;
+  const product = await db.one(
+    "INSERT INTO products (name, quantity, price) VALUES ($1, $2, $3) RETURNING id, name, quantity, price;",
+    [name, quantity, price]
   );
-  res.send(product);
+
+  res.json({ product });
 });
 
-router.post("/", (req: any, res: any) => {
-  const product: Product = {
-    id: products.length + 1,
-    name: req.body.name,
-    quantity: req.body.quantity,
-    price: req.body.price,
-  };
-  products.push(product);
-  res.send(product);
-});
-
-router.put("/:id", (req: any, res: any) => {
-  const product = products.find((p: any) => p.id === parseInt(req.params.id));
-  product.name = req.body.name;
-  product.quantity = req.body.quantity;
-  product.price = req.body.price;
+router.put("/:id", async (req: any, res: any) => {
+  const id = Number(req.params.id);
+  const { name, quantity, price } = req.body;
+  const product = await db.oneOrNone(
+    "UPDATE products SET name = $1, quantity = $2, price = $3 WHERE id = $4 RETURNING id, name, quantity, price;",
+    [name, quantity, price, id]
+  );
 
   res.send(product);
 });
 
-router.delete("/:id", (req: any, res: any) => {
-  const product = products.find((p: any) => p.id === parseInt(req.params.id));
+router.delete("/:id", async (req: any, res: any) => {
+  const id = Number(req.params.id);
+  const product = await db.oneOrNone(
+    "DELETE FROM products WHERE id = $1 RETURNING id, name, quantity, price;",
+    [id]
+  );
 
-  const index = products.indexOf(product);
-  products.splice(index, 1);
-  res.send(product);
+  res.json({ product });
 });
 
 module.exports = router;

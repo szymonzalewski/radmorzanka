@@ -1,6 +1,7 @@
 const express = require("express");
 const router = express.Router();
 const users = require("./usersShare");
+const db = require("../db");
 
 const bcrypt = require("bcrypt");
 
