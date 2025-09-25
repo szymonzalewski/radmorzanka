@@ -12,14 +12,14 @@ router.get("/", auth, async (req: any, res: any) => {
   const orders = await db.any(
     `
     SELECT 
-      o.id,
-      o.user_id         AS "userId",
-      o.firstname,
-      o.surname,
+       o.id,
+        o.user_id AS "userId",
+        o.firstname AS "firstname",
+        o.surname AS "surname",
       o.order_description AS "orderDescription",
-      o.status,
-      o.created_at      AS "createdAt",
-      o.updated_at      AS "updatedAt",
+  o.status AS "status",
+  o.created_at AS "createdAt",
+  o.updated_at AS "updatedAt",
       COALESCE(SUM(op.quantity * op.price), 0) AS "totalPrice",
       COALESCE(
         json_agg(
@@ -68,7 +68,6 @@ router.post("/:orderId/products", auth, async (req: any, res: any) => {
   const orderId = Number(req.params.orderId);
   const { productId, quantity } = req.body;
 
-  // sprawdź czy zamówienie istnieje i czy user ma do niego prawa
   const order = await db.oneOrNone(
     "SELECT id, user_id FROM orders WHERE id = $1",
     [orderId]

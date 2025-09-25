@@ -9,7 +9,7 @@ const cors = require("cors");
 const app = express();
 const port = 3003;
 
-const allowedOrigins = ["http://127.0.0.1:5173", "http://localhost:5173"];
+const allowedOrigins = ["http://localhost:5173", "http://127.0.0.1:5173"];
 
 const corsOptions = {
   origin(origin: any, cb: any) {
@@ -21,13 +21,10 @@ const corsOptions = {
   credentials: true,
 };
 
-// 1) globalne CORS
 app.use(cors(corsOptions));
 
-// 2) lekka obsługa preflight (bez wzorców tras)
 app.use((req: any, res: any, next: any) => {
   if (req.method === "OPTIONS") {
-    // cors() już dodał nagłówki — odsyłamy 204, żeby przeglądarka była zadowolona
     return res.sendStatus(204);
   }
   next();
