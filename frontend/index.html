@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Radmor API</title>
+    <link href="./style.css" />
+  </head>
+  <body>
+    <section>
+      <h2>Witaj na naszej stronie</h2>
+    </section>
+
+    <section>
+      <h1>Rejestracja użytkownika</h1>
+      <form id="registerForm">
+        <label
+          >Imię
+          <input type="text" id="firstname" required />
+        </label>
+        <label
+          >Nazwisko
+          <input type="text" id="surname" required />
+        </label>
+        <label
+          >Email
+          <input type="email" id="email" required />
+        </label>
+        <label
+          >Hasło
+          <input type="password" id="password" required />
+        </label>
+        <label
+          >Role
+          <input type="text" id="role" required />
+        </label>
+        <button type="submit">Zarejestruj</button>
+      </form>
+      <div id="result"></div>
+    </section>
+
+    <section>
+      <h1>Logowanie użytkownika</h1>
+      <form id="loginForm">
+        <label
+          >Email
+          <input type="email" id="emailLogin" required />
+        </label>
+        <label
+          >Hasło
+          <input type="password" id="passwordLogin" required />
+        </label>
+        <button type="submit">Zaloguj</button>
+      </form>
+      <div id="resultLogin"></div>
+    </section>
+
+    <script src="./script.js" defer></script>
+  </body>
+</html>

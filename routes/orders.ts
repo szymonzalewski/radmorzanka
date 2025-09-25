@@ -1,11 +1,47 @@
 const express = require("express");
 const router = express.Router();
 const db = require("../db");
+const { auth, requireAdmin } = require("../auth/authMiddleware");
 
-router.get("/", async (req: any, res: any) => {
+router.get("/", auth, async (req: any, res: any) => {
+  const isAdmin = req.user.role === "admin";
+  const params = [];
+  const where = isAdmin ? "" : "WHERE o.user_id = $1";
+  if (!isAdmin) params.push(req.user.id);
+
   const orders = await db.any(
-    "SELECT o.id, o.firstname, o.surname, o.order_description, o.status, o.created_at, o.updated_at, COALESCE(SUM(op.quantity * op.price), 0) AS total_price, COALESCE( json_agg( json_build_object( 'id', p.id, 'name', p.name, 'quantity', op.quantity, 'price', op.price ) ) FILTER (WHERE op.id IS NOT NULL), '[]' ) AS ordered_products FROM orders o LEFT JOIN order_products op ON o.id = op.order_id LEFT JOIN products p ON p.id = op.product_id GROUP BY o.id ORDER BY o.id;"
+    `
+    SELECT 
+      o.id,
+      o.user_id         AS "userId",
+      o.firstname,
+      o.surname,
+      o.order_description AS "orderDescription",
+      o.status,
+      o.created_at      AS "createdAt",
+      o.updated_at      AS "updatedAt",
+      COALESCE(SUM(op.quantity * op.price), 0) AS "totalPrice",
+      COALESCE(
+        json_agg(
+          json_build_object(
+            'id', p.id,
+            'name', p.name,
+            'quantity', op.quantity,
+            'price', op.price
+          )
+        ) FILTER (WHERE op.id IS NOT NULL),
+        '[]'
+      ) AS "orderedProducts"
+    FROM orders o
+    LEFT JOIN order_products op ON o.id = op.order_id
+    LEFT JOIN products p        ON p.id = op.product_id
+    ${where}
+    GROUP BY o.id
+    ORDER BY o.id;
+    `,
+    params
   );
+
   res.json({ orders });
 });
 router.get("/:id", async (req: any, res: any) => {
@@ -14,29 +50,52 @@ router.get("/:id", async (req: any, res: any) => {
   res.json({ order });
 });
 
-router.post("/", async (req: any, res: any) => {
+router.post("/", auth, async (req: any, res: any) => {
+  const userId = req.user.id; // z JWT
   const { firstname, surname, orderDescription, status } = req.body;
+
   const order = await db.one(
-    "INSERT INTO orders (firstname, surname, order_description, status) VALUES ($1, $2, $3, $4) RETURNING id, firstname, surname, order_description, status;",
-    [firstname, surname, orderDescription, status ?? "NEW"]
+    `INSERT INTO orders (user_id, firstname, surname, order_description, status)
+     VALUES ($1, $2, $3, $4, $5)
+     RETURNING id, user_id, firstname, surname, order_description, status, created_at, updated_at;`,
+    [userId, firstname, surname, orderDescription ?? "", status ?? "NEW"]
   );
 
   res.json({ order });
 });
 
-router.post("/:orderId/products", async (req: any, res: any) => {
+router.post("/:orderId/products", auth, async (req: any, res: any) => {
   const orderId = Number(req.params.orderId);
   const { productId, quantity } = req.body;
+
+  // sprawdź czy zamówienie istnieje i czy user ma do niego prawa
+  const order = await db.oneOrNone(
+    "SELECT id, user_id FROM orders WHERE id = $1",
+    [orderId]
+  );
+  if (!order) return res.status(404).json({ message: "Order not found" });
+
+  if (req.user.role !== "admin" && order.user_id !== req.user.id) {
+    return res.status(403).json({ message: "Forbidden" });
+  }
+
   const product = await db.oneOrNone(
-    "SELECT price FROM products WHERE id = $1",
+    "SELECT id, price FROM products WHERE id = $1",
     [productId]
   );
-  const order = await db.one(
-    "INSERT INTO order_products (order_id, product_id, quantity, price) VALUES ($1, $2, $3, $4) RETURNING order_id, product_id, quantity, price;",
-    [orderId, productId, quantity, product.price]
+  if (!product) return res.status(404).json({ message: "Product not found" });
+
+  const inserted = await db.one(
+    `INSERT INTO order_products (order_id, product_id, quantity, price)
+     VALUES ($1, $2, $3, $4)
+     ON CONFLICT (order_id, product_id)
+     DO UPDATE SET quantity = order_products.quantity + EXCLUDED.quantity,
+                   price    = EXCLUDED.price
+     RETURNING order_id, product_id, quantity, price;`,
+    [orderId, productId, quantity, Number(product.price)]
   );
 
-  res.json({ order });
+  res.json({ item: inserted });
 });
 
 router.put("/:orderId/status", async (req: any, res: any) => {
