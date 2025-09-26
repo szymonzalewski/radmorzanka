@@ -68,9 +68,16 @@ formLogin.addEventListener("submit", async (e) => {
     resultLogin.textContent = "Zalogowano";
     formLogin.reset();
 
-    setTimeout(() => {
-      window.location.href = "user.html";
-    }, 500);
+    if (data.role === "admin") {
+      return setTimeout(() => {
+        window.location.href = "admin.html";
+      }, 500);
+    }
+    if (data.role === "user") {
+      return setTimeout(() => {
+        window.location.href = "user.html";
+      }, 500);
+    }
   } catch (err) {
     console.error(err);
     resultLogin.textContent = err.message || "Błąd logowania";

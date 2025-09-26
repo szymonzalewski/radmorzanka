@@ -45,14 +45,3 @@ document.getElementById("loadOrdersBtn").addEventListener("click", async () => {
     list.appendChild(li);
   });
 });
-
-document.addEventListener("DOMContentLoaded", async () => {
-  const res = await fetch("http://localhost:3003/products");
-  const data = await res.json();
-  const list = document.getElementById("productList");
-  list.innerHTML = "";
-  data.products.forEach((product) => {
-    const li = document.createElement("li");
-    li.textContent = `${product.id} ${product.name} ${product.quantity} ${product.price}`;
-  });
-});
