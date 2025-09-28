@@ -3,7 +3,7 @@ const router = express.Router();
 const db = require("../db");
 const { auth, requireAdmin } = require("../auth/authMiddleware");
 
-router.get("/", auth, async (req: any, res: any) => {
+router.get("/", auth, requireAdmin, async (req: any, res: any) => {
   const isAdmin = req.user.role === "admin";
   const params = [];
   const where = isAdmin ? "" : "WHERE o.user_id = $1";
@@ -44,7 +44,7 @@ router.get("/", auth, async (req: any, res: any) => {
 
   res.json({ orders });
 });
-router.get("/:id", async (req: any, res: any) => {
+router.get("/:id", auth, async (req: any, res: any) => {
   const id = Number(req.params.id);
   const order = await db.oneOrNone("SELECT * FROM orders WHERE id=$1", [id]);
   res.json({ order });
@@ -64,60 +64,70 @@ router.post("/", auth, async (req: any, res: any) => {
   res.json({ order });
 });
 
-router.post("/:orderId/products", auth, async (req: any, res: any) => {
-  const orderId = Number(req.params.orderId);
-  const { productId, quantity } = req.body;
+router.post(
+  "/:orderId/products",
+  auth,
 
-  const order = await db.oneOrNone(
-    "SELECT id, user_id FROM orders WHERE id = $1",
-    [orderId]
-  );
-  if (!order) return res.status(404).json({ message: "Order not found" });
+  async (req: any, res: any) => {
+    const orderId = Number(req.params.orderId);
+    const { productId, quantity } = req.body;
 
-  if (req.user.role !== "admin" && order.user_id !== req.user.id) {
-    return res.status(403).json({ message: "Forbidden" });
-  }
+    const order = await db.oneOrNone(
+      "SELECT id, user_id FROM orders WHERE id = $1",
+      [orderId]
+    );
+    if (!order) return res.status(404).json({ message: "Order not found" });
 
-  const product = await db.oneOrNone(
-    "SELECT id, price FROM products WHERE id = $1",
-    [productId]
-  );
-  if (!product) return res.status(404).json({ message: "Product not found" });
+    if (req.user.role !== "admin" && order.user_id !== req.user.id) {
+      return res.status(403).json({ message: "Forbidden" });
+    }
 
-  const inserted = await db.one(
-    `INSERT INTO order_products (order_id, product_id, quantity, price)
+    const product = await db.oneOrNone(
+      "SELECT id, price FROM products WHERE id = $1",
+      [productId]
+    );
+    if (!product) return res.status(404).json({ message: "Product not found" });
+
+    const inserted = await db.one(
+      `INSERT INTO order_products (order_id, product_id, quantity, price)
      VALUES ($1, $2, $3, $4)
      ON CONFLICT (order_id, product_id)
      DO UPDATE SET quantity = order_products.quantity + EXCLUDED.quantity,
                    price    = EXCLUDED.price
      RETURNING order_id, product_id, quantity, price;`,
-    [orderId, productId, quantity, Number(product.price)]
-  );
+      [orderId, productId, quantity, Number(product.price)]
+    );
 
-  res.json({ item: inserted });
-});
+    res.json({ item: inserted });
+  }
+);
 
-router.put("/:orderId/status", async (req: any, res: any) => {
-  const id = Number(req.params.orderId);
-  const { status } = req.body;
-  const order = await db.oneOrNone(
-    "UPDATE orders SET status = $1, updated_at = NOW() WHERE id = $2 RETURNING id, firstname, surname, order_description, status, updated_at;",
-    [status, id]
-  );
-  // dla if
-  const validStatuses = [
-    "NEW",
-    "CONFIRMED",
-    "CANCELLED",
-    "IN_PREPARATION",
-    "READY",
-    "DELIVERED",
-  ];
+router.put(
+  "/:orderId/status",
+  auth,
+  requireAdmin,
+  async (req: any, res: any) => {
+    const id = Number(req.params.orderId);
+    const { status } = req.body;
+    const order = await db.oneOrNone(
+      "UPDATE orders SET status = $1, updated_at = NOW() WHERE id = $2 RETURNING id, firstname, surname, order_description, status, updated_at;",
+      [status, id]
+    );
+    // dla if
+    const validStatuses = [
+      "NEW",
+      "CONFIRMED",
+      "CANCELLED",
+      "IN_PREPARATION",
+      "READY",
+      "DELIVERED",
+    ];
 
-  res.json({ order });
-});
+    res.json({ order });
+  }
+);
 
-router.delete("/:id", async (req: any, res: any) => {
+router.delete("/:id", auth, requireAdmin, async (req: any, res: any) => {
   const id = Number(req.params.id);
   const order = await db.oneOrNone(
     "DELETE FROM orders WHERE id = $1 RETURNING id;",

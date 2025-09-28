@@ -63,3 +63,116 @@ document
     });
     const data = await res.json();
   });
+
+document.getElementById("deleteOrder").addEventListener("click", async () => {
+  const token = localStorage.getItem("accessToken");
+  const orderId = document.getElementById("deleteOrderId").value;
+
+  const res = await fetch(`http://localhost:3003/orders/${orderId}`, {
+    method: "DELETE",
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${token}`,
+    },
+  });
+  const data = await res.json();
+});
+
+document.getElementById("getUsers").addEventListener("click", async () => {
+  const token = localStorage.getItem("accessToken");
+
+  const res = await fetch("http://localhost:3003/users", {
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  });
+  const data = await res.json();
+  const list = document.getElementById("usersList");
+
+  list.innerHTML = "";
+
+  data.users.forEach((user) => {
+    const li = document.createElement("li");
+
+    li.innerHTML = `<strong>Users #${user.id}</strong><br>
+    Imię: ${user.firstname}<br>
+    Nazwisko: ${user.surname}<br>
+    Email: ${user.email}<br>
+    Utworzono: ${user.created_at}<br>
+    Zaktualizowano: ${user.updated_at}<br>`;
+
+    const btn = document.createElement("button");
+    btn.type = "button";
+    btn.textContent = "Ukryj to użytkownika";
+    btn.addEventListener("click", () => {
+      li.style.display = li.style.display === "none" ? "" : "none";
+    });
+    li.appendChild(btn);
+
+    list.appendChild(li);
+  });
+});
+
+document
+  .getElementById("getProductsAdmin")
+  .addEventListener("click", async () => {
+    const token = localStorage.getItem("accessToken");
+    const res = await fetch("http://localhost:3003/products", {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
+    const data = await res.json();
+    const list = document.getElementById("showProductsAdmin");
+    list.innerHTML = "";
+
+    data.products.forEach((product) => {
+      const li = document.createElement("li");
+
+      li.innerHTML = `<strong>Products #${product.id}</strong><br>
+    Nazwa: ${product.name}<br>
+    Ilość: ${product.quantity}<br>
+    Cena: ${product.price}<br>`;
+
+      const btn = document.createElement("button");
+      btn.textContent = "Ukryj produkt";
+      btn.addEventListener("click", () => {
+        li.style.display = li.style.display === "none" ? "" : "none";
+      });
+      li.appendChild(btn);
+      list.appendChild(li);
+    });
+  });
+
+document.getElementById("editProduct").addEventListener("click", async () => {
+  const token = localStorage.getItem("accessToken");
+  const productId = document.getElementById("productId").value;
+  const productName = document.getElementById("productName").value.trim();
+  const productQuantity = document.getElementById("productQuantity").value;
+  const productPrice = document.getElementById("productPrice").value;
+  const addQuantity = Number(productQuantity);
+  const newPrice = Number(productPrice);
+  const response = await fetch(`http://localhost:3003/products/${productId}`, {
+    headers: { Authorization: `Bearer ${token}` },
+  });
+  const productsData = await response.json();
+  const current = productsData.product;
+  console.log(productsData.product);
+
+  const newQuantity = addQuantity + current.quantity;
+
+  const res = await fetch(`http://localhost:3003/products/${productId}`, {
+    method: "PUT",
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${token}`,
+    },
+    body: JSON.stringify({
+      name: productName,
+      quantity: newQuantity,
+      price: newPrice,
+    }),
+  });
+  const data = await res.json();
+  console.log(data);
+});

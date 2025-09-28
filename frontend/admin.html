@@ -23,6 +23,30 @@
       <input type="number" id="orderIdStatus" placeholder="Id zamówienia" />
       <button id="editOrderStatus">Edytuj status zamówienia</button>
     </section>
+    <section>
+      <input
+        id="deleteOrderId"
+        type="number"
+        placeholder="Usuń zamówienie"
+      /><button id="deleteOrder">Usuń zamównienie</button>
+    </section>
+    <section>
+      <button id="getUsers">Pobierz użytkowników</button>
+      <ul id="usersList"></ul>
+    </section>
+
+    <section>
+      <button id="getProductsAdmin">Pobierz listę produktów</button>
+      <ul id="showProductsAdmin"></ul>
+    </section>
+    <section>
+      <button id="editProduct">Pobierz listę produktów</button>
+      <input type="mumber" placeholder="Podaj numer produktu" id="productId" />
+      <input type="text" placeholder="Nazwa Produktu" id="productName" />
+      <input type="number" placeholder="Ilość produktów" id="productQuantity" />
+      <input type="number" placeholder="Cena produktu" id="productPrice" />
+    </section>
+
     <script src="./admin.js" defer></script>
   </body>
 </html>
