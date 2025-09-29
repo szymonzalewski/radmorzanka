@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Produkty</title>
+    <link rel="stylesheet" href="../styles/mainPage.css" />
+  </head>
+  <body>
+    <nav>
+      <h2>Witaj na naszej stronie</h2>
+      <ul>
+        <li><a href="../index.html">Strona główna</a></li>
+        <li><a href="../register.html">Rejestracja</a></li>
+        <li><a href="../login.html">Logowanie</a></li>
+      </ul>
+    </nav>
+    <section><ul id="productList"></ul></section>
+
+    <script>
+      document.addEventListener("DOMContentLoaded", async () => {
+        const res = await fetch("http://localhost:3003/products");
+        const data = await res.json();
+        const list = document.getElementById("productList");
+        list.innerHTML = "";
+        data.products.forEach((p) => {
+          const li = document.createElement("li");
+          li.textContent = `#${p.id} ${p.name} — qty: ${
+            p.quantity
+          }, price: ${Number(p.price).toFixed(2)}`;
+          list.appendChild(li);
+        });
+      });
+    </script>
+  </body>
+</html>

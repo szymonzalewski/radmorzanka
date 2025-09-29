@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Logowanie</title>
+    <link rel="stylesheet" href="../styles/mainPage.css" />
+  </head>
+  <body>
+    <nav>
+      <h2>Witaj na naszej stronie</h2>
+      <ul>
+        <li><a href="../index.html">Strona główna</a></li>
+        <li><a href="../products/products.html">Produkty</a></li>
+        <li><a href="../register/register.html">Rejestracja</a></li>
+      </ul>
+    </nav>
+    <section>
+      <h1>Logowanie użytkownika</h1>
+      <form id="loginForm" autocomplete="off">
+        <label
+          >Email
+          <input type="email" id="emailLogin" required />
+        </label>
+        <label
+          >Hasło
+          <input type="password" id="passwordLogin" required />
+        </label>
+        <button type="submit">Zaloguj</button>
+      </form>
+      <div id="resultLogin"></div>
+    </section>
+    <script src="./login.js" defer></script>
+  </body>
+</html>

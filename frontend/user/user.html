@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>User page</title>
+    <link rel="stylesheet" href="../styles/mainPage.css" />
+  </head>
+  <body>
+    <nav>
+      <h2>Witaj na naszej stronie</h2>
+      <ul>
+        <li><a href="../index.html">Strona główna</a></li>
+        <li><a href="../products/products.html">Produkty</a></li>
+        <li><a href="../register/register.html">Rejestracja</a></li>
+        <li><a href="../login/login.html">Logowanie</a></li>
+      </ul>
+    </nav>
+    <header>
+      <h1>Panel uytkownika</h1>
+    </header>
+    <section>
+      <button id="loadOrdersBtn">Pobierz zamównienia</button>
+      <ul id="ordersList"></ul>
+    </section>
+    <section>
+      <!--userId, firstname, surname, orderDescription ?? "", status ?? "NEW"-->
+
+      <input type="text" id="userFirstname" placeholder="Podaj Imię" />
+      <input type="text" id="userSurname" placeholder="Podaj Nazwisko" />
+      <input
+        type="text"
+        id="userDescription"
+        placeholder="Uwagi do zamówienia"
+      />
+      <button id="userCreateOrder">Utwórz zamównienie</button>
+    </section>
+    <script src="./user.js"></script>
+  </body>
+</html>

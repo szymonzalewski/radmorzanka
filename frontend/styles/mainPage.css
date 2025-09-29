@@ -1,0 +1,16 @@
+/* Color palet
+header, background: #fcf1e1
+ */
+body {
+  margin: 0;
+}
+
+nav {
+  background-color: #fcf1e1;
+}
+
+nav h2 {
+  margin: 0;
+  padding-top: 10px;
+  padding-bottom: 10px;
+}

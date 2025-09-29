@@ -3,7 +3,7 @@ const router = express.Router();
 const db = require("../db");
 const { auth, requireAdmin } = require("../auth/authMiddleware");
 
-router.get("/", auth, requireAdmin, async (req: any, res: any) => {
+router.get("/", auth, async (req: any, res: any) => {
   const isAdmin = req.user.role === "admin";
   const params = [];
   const where = isAdmin ? "" : "WHERE o.user_id = $1";

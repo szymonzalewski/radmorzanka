@@ -17,7 +17,7 @@ router.get("/:id", async (req: any, res: any) => {
   res.json({ product });
 });
 
-router.post("/", requireAdmin, async (req: any, res: any) => {
+router.post("/", auth, requireAdmin, async (req: any, res: any) => {
   const { name, quantity, price } = req.body;
   const product = await db.one(
     "INSERT INTO products (name, quantity, price) VALUES ($1, $2, $3) RETURNING id, name, quantity, price;",
@@ -38,7 +38,7 @@ router.put("/:id", auth, requireAdmin, async (req: any, res: any) => {
   res.send({ product });
 });
 
-router.delete("/:id", requireAdmin, async (req: any, res: any) => {
+router.delete("/:id", auth, requireAdmin, async (req: any, res: any) => {
   const id = Number(req.params.id);
   const product = await db.oneOrNone(
     "DELETE FROM products WHERE id = $1 RETURNING id, name, quantity, price;",
