@@ -1,3 +1,5 @@
+//------------ WALDIACJA ZAROBIONA ------------//
+
 const formLogin = document.getElementById("loginForm");
 const resultLogin = document.getElementById("resultLogin");
 

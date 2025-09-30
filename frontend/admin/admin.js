@@ -1,21 +1,26 @@
 // Poobranie zamówień
 document.getElementById("getOrdersBtn").addEventListener("click", async () => {
   const token = localStorage.getItem("accessToken");
+  if (!token) {
+    alert("Musisz się zalogować");
+    window.location.href = "../login/login.js.html";
+    return;
+  }
+  try {
+    const res = await fetch("http://localhost:3003/orders", {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
+    const data = await res.json();
+    console.log(data);
 
-  const res = await fetch("http://localhost:3003/orders", {
-    headers: {
-      Authorization: `Bearer ${token}`,
-    },
-  });
-  const data = await res.json();
-  console.log(data);
+    const list = document.getElementById("ordersAdminList");
+    list.innerHTML = "";
 
-  const list = document.getElementById("ordersAdminList");
-  list.innerHTML = "";
-
-  data.orders.forEach((order) => {
-    const li = document.createElement("li");
-    li.innerHTML = `
+    data.orders.forEach((order) => {
+      const li = document.createElement("li");
+      li.innerHTML = `
     <strong>Zamówienie #${order.id}</strong><br>
     Imię: ${order.firstname}<br>
     Nazwisko: ${order.surname}<br>
@@ -27,24 +32,28 @@ document.getElementById("getOrdersBtn").addEventListener("click", async () => {
     <em>Produkty:</em>
   `;
 
-    const ul = document.createElement("ul");
-    (order.orderedProducts || []).forEach((p) => {
-      const prodLi = document.createElement("li");
-      prodLi.textContent = `${p.name} (x${p.quantity}) — ${p.price} zł`;
-      ul.appendChild(prodLi);
-    });
-    li.appendChild(ul);
+      const ul = document.createElement("ul");
+      (order.orderedProducts || []).forEach((p) => {
+        const prodLi = document.createElement("li");
+        prodLi.textContent = `${p.name} (x${p.quantity}) — ${p.price} zł`;
+        ul.appendChild(prodLi);
+      });
+      li.appendChild(ul);
 
-    const btn = document.createElement("button");
-    btn.type = "button";
-    btn.textContent = "Ukryj to zamówienie";
-    btn.addEventListener("click", () => {
-      li.style.display = li.style.display === "none" ? "" : "none";
-    });
-    li.appendChild(btn);
+      const btn = document.createElement("button");
+      btn.type = "button";
+      btn.textContent = "Ukryj to zamówienie";
+      btn.addEventListener("click", () => {
+        li.style.display = li.style.display === "none" ? "" : "none";
+      });
+      li.appendChild(btn);
 
-    list.appendChild(li);
-  });
+      list.appendChild(li);
+    });
+  } catch (err) {
+    console.error("Błąd pobierania:", err);
+    alert(err.message || "Błąd pobierania zamówień.");
+  }
 });
 
 // edycja statusu zamówienia
@@ -52,18 +61,51 @@ document
   .getElementById("editOrderStatus")
   .addEventListener("click", async () => {
     const token = localStorage.getItem("accessToken");
+    if (!token) {
+      alert("Musisz się zalogować");
+      window.location.href = "../login/login.html";
+      return;
+    }
+    const validStatuses = [
+      "NEW",
+      "CONFIRMED",
+      "CANCELLED",
+      "IN_PREPARATION",
+      "READY",
+      "DELIVERED",
+    ];
     const newStatus = document.getElementById("orderStatusEdit").value.trim();
-    const orderId = document.getElementById("orderIdStatus").value;
+    if (!validStatuses.includes(newStatus)) {
+      alert(
+        "Nie poprawny status. Dozwolone NEW, CONFIRMED, CANCELLED, IN_PREPARATION, READY, DELIVERED"
+      );
+      return;
+    }
+    const orderId = Number(document.getElementById("orderIdStatus").value);
+    if (!Number.isInteger(orderId) || orderId <= 0)
+      return alert("Niepoprawny orderId");
+    try {
+      const res = await fetch(
+        `http://localhost:3003/orders/${orderId}/status`,
+        {
+          method: "PUT",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+          },
+          body: JSON.stringify({ status: newStatus }),
+        }
+      );
+      const text = await res.text();
+      if (!res.ok) throw new Error(text || `HTTP ${res.status}`);
 
-    const res = await fetch(`http://localhost:3003/orders/${orderId}/status`, {
-      method: "PUT",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${token}`,
-      },
-      body: JSON.stringify({ status: newStatus }),
-    });
-    const data = await res.json();
+      const data = JSON.parse(text);
+      console.log("Edytowano:", data);
+      alert(`Zamówienie ${orderId} ma status: ${newStatus}`);
+    } catch (err) {
+      console.error("Błąd edytowania:", err);
+      alert(err.message || "Błąd edycji produktu");
+    }
   });
 
 // Usuwanie zamówienia

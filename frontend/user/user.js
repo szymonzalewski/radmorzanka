@@ -1,25 +1,25 @@
-// Pobranie zamówień
+// ------------ WALIDACJA ZROBIONA ------------ //
 document.getElementById("loadOrdersBtn").addEventListener("click", async () => {
   const token = localStorage.getItem("accessToken");
 
   if (!token) {
     alert("Musisz się zalogować");
-    window.location.href = "../index.html";
+    window.location.href = "../login/login.html";
     return;
   }
+  try {
+    const res = await fetch("http://localhost:3003/orders", {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
+    const text = await res.text();
+    const list = document.getElementById("ordersList");
+    list.innerHTML = "";
 
-  const res = await fetch("http://localhost:3003/orders", {
-    headers: {
-      Authorization: `Bearer ${token}`,
-    },
-  });
-  const data = await res.json();
-  const list = document.getElementById("ordersList");
-  list.innerHTML = "";
-
-  data.orders.forEach((order) => {
-    const li = document.createElement("li");
-    li.innerHTML = `
+    data.orders.forEach((order) => {
+      const li = document.createElement("li");
+      li.innerHTML = `
       <strong>Zamówienie #${order.id}</strong><br>
       Imię: ${order.firstname}<br>
       Nazwisko: ${order.surname}<br>
@@ -31,42 +31,83 @@ document.getElementById("loadOrdersBtn").addEventListener("click", async () => {
       <em>Produkty:</em>
     `;
 
-    // lista produktów
-    const ul = document.createElement("ul");
-    if (order.orderedProducts && Array.isArray(order.orderedProducts)) {
-      order.orderedProducts.forEach((p) => {
-        const prodLi = document.createElement("li");
-        prodLi.textContent = `${p.name} (x${p.quantity}) — ${p.price} zł`;
-        ul.appendChild(prodLi);
-      });
-    }
-    li.appendChild(ul);
+      // lista produktów
+      const ul = document.createElement("ul");
+      if (order.orderedProducts && Array.isArray(order.orderedProducts)) {
+        order.orderedProducts.forEach((p) => {
+          const prodLi = document.createElement("li");
+          prodLi.textContent = `${p.name} (x${p.quantity}) — ${p.price} zł`;
+          ul.appendChild(prodLi);
+        });
+      }
+      li.appendChild(ul);
 
-    list.appendChild(li);
-  });
+      list.appendChild(li);
+    });
+
+    if (!res.ok) {
+      throw new Error(text || `HTTP ${res.status}`);
+    }
+    const data = JSON.parse(text);
+  } catch (err) {
+    console.error("Błąd pobierania:", err);
+    alert(err.message || "Błąd pobierania zamówienia.");
+  }
 });
 
 document
   .getElementById("userCreateOrder")
   .addEventListener("click", async () => {
     const token = localStorage.getItem("accessToken");
-    const firstname = document.getElementById("userFirstname").value.trim();
-    const surname = document.getElementById("userSurname").value.trim();
-    const orderDescription = document.getElementById("userDescription").value;
+    const regex = /^[A-Za-zÀ-ž\s\-]{2,30}$/;
 
-    const res = await fetch("http://localhost:3003/orders", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${token}`,
-      },
-      body: JSON.stringify({
-        firstname,
-        surname,
-        orderDescription,
-      }),
-    });
-    const data = await res.json();
+    if (!token) {
+      alert("Musisz się zalogować");
+      window.location.href = "../index.html";
+      return;
+    }
+
+    const firstname = document.getElementById("userFirstname").value.trim();
+    if (!regex.test(firstname)) {
+      alert(
+        "Imię może zawierać tylko litery, spacje i myślniki (2–30 znaków)."
+      );
+      return;
+    }
+    const surname = document.getElementById("userSurname").value.trim();
+    if (!regex.test(surname)) {
+      alert(
+        "Nazwisko może zawierać tylko litery, spacje i myślniki (2–30 znaków)."
+      );
+    }
+    const orderDescription = document.getElementById("userDescription").value;
+    if (orderDescription.length > 500) {
+      alert("Opis nie może zawierać więcej niż 500 znaków.");
+    }
+    try {
+      const res = await fetch("http://localhost:3003/orders", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify({
+          firstname,
+          surname,
+          orderDescription,
+        }),
+      });
+      const text = await res.text();
+      if (!res.ok) {
+        throw new Error(text || `HTTP ${res.status}`);
+      }
+      const data = JSON.parse(text);
+      console.log("Dodano:", data);
+      alert("Zamówienie utworzone.");
+    } catch (err) {
+      console.error("Błąd tworzenia:", err);
+      alert(err.message || "Błąd tworzenia zamówienia.");
+    }
   });
 
 document
@@ -104,7 +145,7 @@ document
         }
       );
 
-      const text = await res.text(); // pokaże dokładny komunikat z backendu
+      const text = await res.text();
       if (!res.ok) throw new Error(text || `HTTP ${res.status}`);
 
       const data = JSON.parse(text);

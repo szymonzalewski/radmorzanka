@@ -63,45 +63,6 @@ router.post("/", auth, async (req: any, res: any) => {
 
   res.json({ order });
 });
-/*
-router.post(
-  "/:orderId/products",
-  auth,
-
-  async (req: any, res: any) => {
-    const orderId = Number(req.params.orderId);
-    const { productId, quantity } = req.body;
-
-    const order = await db.oneOrNone(
-      "SELECT id, user_id FROM orders WHERE id = $1",
-      [orderId]
-    );
-    if (!order) return res.status(404).json({ message: "Order not found" });
-
-    if (req.user.role !== "admin" && order.user_id !== req.user.id) {
-      return res.status(403).json({ message: "Forbidden" });
-    }
-
-    const product = await db.oneOrNone(
-      "SELECT id, price FROM products WHERE id = $1",
-      [productId]
-    );
-    if (!product) return res.status(404).json({ message: "Product not found" });
-
-    const inserted = await db.one(
-      `INSERT INTO order_products (order_id, product_id, quantity, price)
-     VALUES ($1, $2, $3, $4)
-     ON CONFLICT (order_id, product_id)
-     DO UPDATE SET quantity = order_products.quantity + EXCLUDED.quantity,
-                   price    = EXCLUDED.price
-     RETURNING order_id, product_id, quantity, price;`,
-      [orderId, productId, quantity, Number(product.price)]
-    );
-
-    res.json({ item: inserted });
-  }
-);
-*/
 
 router.post("/:orderId/products", auth, async (req: any, res: any) => {
   const orderId = Number(req.params.orderId);
