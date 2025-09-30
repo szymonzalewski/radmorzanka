@@ -63,7 +63,7 @@ router.post("/", auth, async (req: any, res: any) => {
 
   res.json({ order });
 });
-
+/*
 router.post(
   "/:orderId/products",
   auth,
@@ -101,6 +101,99 @@ router.post(
     res.json({ item: inserted });
   }
 );
+*/
+
+router.post("/:orderId/products", auth, async (req: any, res: any) => {
+  const orderId = Number(req.params.orderId);
+  const { productId, quantity } = req.body;
+
+  if (!Number.isInteger(orderId) || orderId <= 0)
+    return res.status(400).json({ message: "Niepoprawny orderId" });
+  if (!Number.isInteger(productId) || productId <= 0)
+    return res.status(400).json({ message: "Niepoprawny productId" });
+  if (!Number.isInteger(quantity) || quantity <= 0)
+    return res.status(400).json({ message: "Ilość musi być > 0" });
+
+  try {
+    const result = await db.tx(async (t: any) => {
+      // 1) Sprawdź zamówienie + własność (jeśli nie-admin)
+      const ord = await t.oneOrNone(
+        "SELECT id, user_id FROM orders WHERE id = $1",
+        [orderId]
+      );
+      if (!ord) throw { status: 404, message: "Nie znaleziono zamówienia" };
+      if (req.user.role !== "admin" && ord.user_id !== req.user.id) {
+        throw { status: 403, message: "Brak dostępu do zamówienia" };
+      }
+
+      // 2) Pobierz produkt z blokadą i sprawdź zapas
+      const prod = await t.oneOrNone(
+        "SELECT id, price, quantity FROM products WHERE id = $1 FOR UPDATE",
+        [productId]
+      );
+      if (!prod) throw { status: 404, message: "Nie znaleziono produktu" };
+      if (prod.quantity < quantity) {
+        throw {
+          status: 409,
+          message: "Brak wystarczającej ilości w magazynie",
+        };
+      }
+
+      // 3) Upsert do order_products
+      await t.none(
+        `INSERT INTO order_products (order_id, product_id, quantity, price)
+         VALUES ($1, $2, $3, $4)
+         ON CONFLICT (order_id, product_id)
+         DO UPDATE SET quantity = order_products.quantity + EXCLUDED.quantity,
+                       price    = EXCLUDED.price`,
+        [orderId, productId, quantity, Number(prod.price)]
+      );
+
+      // 4) Zmniejsz stan magazynowy
+      await t.none(
+        "UPDATE products SET quantity = quantity - $2 WHERE id = $1",
+        [productId, quantity]
+      );
+
+      // 5) Znacznik czasu zamówienia
+      await t.none("UPDATE orders SET updated_at = NOW() WHERE id = $1", [
+        orderId,
+      ]);
+
+      // 6) Zwróć aktualny stan zamówienia
+      const orderRow = await t.one(
+        `SELECT id,
+                firstname,
+                surname,
+                order_description AS "orderDescription",
+                status,
+                created_at AS "createdAt",
+                updated_at AS "updatedAt"
+           FROM orders
+          WHERE id = $1`,
+        [orderId]
+      );
+
+      const items = await t.any(
+        `SELECT p.id, p.name, op.quantity, op.price
+           FROM order_products op
+           JOIN products p ON p.id = op.product_id
+          WHERE op.order_id = $1
+          ORDER BY p.id`,
+        [orderId]
+      );
+
+      return { ...orderRow, orderedProducts: items };
+    });
+
+    res.status(200).json(result);
+  } catch (err: any) {
+    console.error("ADD TO ORDER error:", err);
+    res
+      .status(err.status ?? 500)
+      .json({ message: err.message ?? "Błąd serwera" });
+  }
+});
 
 router.put(
   "/:orderId/status",

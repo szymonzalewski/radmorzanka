@@ -24,8 +24,6 @@
       <ul id="ordersList"></ul>
     </section>
     <section>
-      <!--userId, firstname, surname, orderDescription ?? "", status ?? "NEW"-->
-
       <input type="text" id="userFirstname" placeholder="Podaj Imię" />
       <input type="text" id="userSurname" placeholder="Podaj Nazwisko" />
       <input
@@ -34,6 +32,20 @@
         placeholder="Uwagi do zamówienia"
       />
       <button id="userCreateOrder">Utwórz zamównienie</button>
+    </section>
+    <section>
+      <input
+        type="number"
+        id="userOrderId"
+        placeholder="Podaj numer zamówienia"
+      />
+      <input
+        type="number"
+        id="userProductId"
+        placeholder="Podaj numer productu"
+      />
+      <input type="number" id="userProductQuantity" placeholder="Podaj ilość" />
+      <button id="userAddProductToOrder">Dodaj do zamówienia</button>
     </section>
     <script src="./user.js"></script>
   </body>

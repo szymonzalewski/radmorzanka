@@ -68,3 +68,50 @@ document
     });
     const data = await res.json();
   });
+
+document
+  .getElementById("userAddProductToOrder")
+  .addEventListener("click", async () => {
+    const token = localStorage.getItem("accessToken");
+    if (!token) {
+      alert("Musisz się zalogować");
+      return;
+    }
+
+    const orderId = Number(document.getElementById("userOrderId").value);
+    const productId = Number(document.getElementById("userProductId").value);
+    const quantity = Number(
+      document.getElementById("userProductQuantity").value || "1"
+    );
+
+    if (!Number.isInteger(orderId) || orderId <= 0)
+      return alert("Niepoprawny orderId");
+    if (!Number.isInteger(productId) || productId <= 0)
+      return alert("Niepoprawny productId");
+    if (!Number.isInteger(quantity) || quantity <= 0)
+      return alert("Ilość musi być > 0");
+
+    try {
+      const res = await fetch(
+        `http://localhost:3003/orders/${orderId}/products`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+          },
+          body: JSON.stringify({ productId, quantity }),
+        }
+      );
+
+      const text = await res.text(); // pokaże dokładny komunikat z backendu
+      if (!res.ok) throw new Error(text || `HTTP ${res.status}`);
+
+      const data = JSON.parse(text);
+      console.log("Dodano:", data);
+      alert("Produkt dodany do zamówienia");
+    } catch (err) {
+      console.error("Błąd dodawania:", err);
+      alert(err.message || "Błąd dodawania produktu");
+    }
+  });
