@@ -8,41 +8,64 @@
   </head>
   <body>
     <nav>
-      <h2>Witaj na naszej stronie</h2>
-      <ul>
+      <h2>Radmorzanka</h2>
+      <ul class="ulist">
+        <li><a style="color: crimson" href="">TU BĘDZIE KOSZYK</a></li>
         <li><a href="../index.html">Strona główna</a></li>
         <li><a href="../products/products.html">Produkty</a></li>
         <li><a href="../login/login.html">Logowanie</a></li>
       </ul>
     </nav>
-    <section>
-      <h1>Rejestracja użytkownika</h1>
-      <form id="registerForm" autocomplete="off">
-        <label
-          >Imię
-          <input type="text" id="firstname" required />
-        </label>
-        <label
-          >Nazwisko
-          <input type="text" id="surname" required />
-        </label>
-        <label
-          >Email
-          <input type="email" id="email" required />
-        </label>
-        <label
-          >Hasło
-          <input type="password" id="password" required />
-        </label>
-        <label
-          >Role
-          <input type="text" id="role" required />
-        </label>
-        <button type="submit">Zarejestruj</button>
-      </form>
-      <div id="result"></div>
-    </section>
-
+    <main>
+      <section>
+        <h1>Rejestracja użytkownika</h1>
+        <form id="registerForm" autocomplete="off">
+          <label
+            >Imię
+            <input type="text" id="firstname" required />
+          </label>
+          <label
+            >Nazwisko
+            <input type="text" id="surname" required />
+          </label>
+          <label
+            >Email
+            <input type="email" id="email" required />
+          </label>
+          <label
+            >Hasło
+            <input type="password" id="password" required />
+          </label>
+          <label
+            >Role
+            <input type="text" id="role" required />
+          </label>
+          <button type="submit">Zarejestruj</button>
+        </form>
+        <div id="result"></div>
+      </section>
+    </main>
+    <footer class="footer">
+      <section class="footerAddress">
+        <ul>
+          <li>Ul. Żurawia 3/28,</li>
+          <li>81-074,</li>
+          <li>Gdynia</li>
+        </ul>
+      </section>
+      <section class="footerCopyRight">
+        <ul>
+          <li>Wszelkie prawa zastrzeżone</li>
+          <li>2025</li>
+        </ul>
+      </section>
+      <section class="footerAuthor">
+        <ul>
+          <li>Web creator</li>
+          <li>Szymon "timazali" Zalewski</li>
+        </ul>
+      </section>
+    </footer>
     <script src="./register.js" defer></script>
   </body>
 </html>
