@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Logowanie</title>
+    <link rel="stylesheet" href="../styles/mainPage.css" />
+  </head>
+  <body>
+    <nav>
+      <h2>Radmorzanka</h2>
+      <ul class="ulist">
+        <li><a style="color: crimson" href="">TU BĘDZIE KOSZYK</a></li>
+        <li><a href="../index.html">Strona główna</a></li>
+        <li><a href="../products/products.html">Produkty</a></li>
+        <li><a href="../register/register.html">Rejestracja</a></li>
+      </ul>
+    </nav>
+    <main>
+      <section>
+        <h1>Logowanie użytkownika</h1>
+        <form id="loginForm" autocomplete="off">
+          <label
+            >Email
+            <input type="email" id="emailLogin" required />
+          </label>
+          <label
+            >Hasło
+            <input type="password" id="passwordLogin" required />
+          </label>
+          <button type="submit">Zaloguj</button>
+        </form>
+        <div id="resultLogin"></div>
+      </section>
+    </main>
+    <footer class="footer">
+      <section class="footerAddress">
+        <ul>
+          <li>Ul. Żurawia 3/28,</li>
+          <li>81-074,</li>
+          <li>Gdynia</li>
+        </ul>
+      </section>
+      <section class="footerCopyRight">
+        <ul>
+          <li>Wszelkie prawa zastrzeżone</li>
+          <li>2025</li>
+        </ul>
+      </section>
+      <section class="footerAuthor">
+        <ul>
+          <li>Web creator</li>
+          <li>Szymon "timazali" Zalewski</li>
+        </ul>
+      </section>
+    </footer>
+    <script src="./login.js" defer></script>
+  </body>
+</html>

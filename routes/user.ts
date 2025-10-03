@@ -1,6 +1,5 @@
 const express = require("express");
 const router = express.Router();
-const users = require("./usersShare");
 const { auth, requireAdmin } = require("../auth/authMiddleware");
 const db = require("../db");
 

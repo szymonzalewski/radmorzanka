@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Produkty</title>
+    <link rel="stylesheet" href="../styles/mainPage.css" />
+  </head>
+  <body>
+    <nav>
+      <h2>Radmorzanka</h2>
+      <ul class="ulist">
+        <li><a style="color: crimson" href="">TU BĘDZIE KOSZYK</a></li>
+        <li><a href="../index.html">Strona główna</a></li>
+        <li><a href="../register/register.html">Rejestracja</a></li>
+        <li><a href="../login/login.html">Logowanie</a></li>
+      </ul>
+    </nav>
+    <main>
+      <section><ul id="productList"></ul></section>
+    </main>
+    <footer class="footer">
+      <section class="footerAddress">
+        <ul>
+          <li>Ul. Żurawia 3/28,</li>
+          <li>81-074,</li>
+          <li>Gdynia</li>
+        </ul>
+      </section>
+      <section class="footerCopyRight">
+        <ul>
+          <li>Wszelkie prawa zastrzeżone</li>
+          <li>2025</li>
+        </ul>
+      </section>
+      <section class="footerAuthor">
+        <ul>
+          <li>Web creator</li>
+          <li>Szymon "timazali" Zalewski</li>
+        </ul>
+      </section>
+    </footer>
+    <script>
+      document.addEventListener("DOMContentLoaded", async () => {
+        const res = await fetch("http://localhost:3003/products");
+        const data = await res.json();
+        const list = document.getElementById("productList");
+        list.innerHTML = "";
+        data.products.forEach((p) => {
+          const li = document.createElement("li");
+          li.textContent = `#${p.id} ${p.name} — qty: ${
+            p.quantity
+          }, price: ${Number(p.price).toFixed(2)}`;
+          list.appendChild(li);
+        });
+      });
+    </script>
+  </body>
+</html>
