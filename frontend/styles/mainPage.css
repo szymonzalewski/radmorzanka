@@ -24,7 +24,11 @@ main {
 }
 
 nav {
+<<<<<<< HEAD
   background-color: #fad49d;
+=======
+  background-color: #fcf1e1;
+>>>>>>> feature/validations
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -67,20 +71,31 @@ nav h2 {
   padding-bottom: 30px;
 }
 .imageSoup {
+<<<<<<< HEAD
   margin: 20px auto;
   box-shadow: 6px 4px 6px rgba(0, 0, 0, 0.1);
 
   max-width: 500px;
+=======
+  display: block;
+  margin: 20px auto;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  width: 100%;
+  max-width: 1000px;
+>>>>>>> feature/validations
   height: auto;
   border-radius: 10px;
   margin-bottom: 70px;
 }
 
+<<<<<<< HEAD
 .soupPictures {
   display: flex;
   flex-direction: row;
 }
 
+=======
+>>>>>>> feature/validations
 .footer {
   background-color: #fad49d;
   width: 100%;
@@ -99,6 +114,7 @@ nav h2 {
 
 .footerAuthor {
   margin-right: 130px;
+<<<<<<< HEAD
 }
 
 .searchSection {
@@ -147,4 +163,6 @@ nav h2 {
 
 .buttonMain:hover {
   background-color: #c04c00;
+=======
+>>>>>>> feature/validations
 }
