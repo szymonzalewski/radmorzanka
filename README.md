@@ -8,7 +8,10 @@ Link do listy produktów
 
 ## Logowanie 
 Walidacja tokenem
-Logowanie posiada role user i admin
+Logowanie posiada role:
+> User
+
+> Admin
 
 ## Rejestracja 
 ### Formularz rejestracji zawiera:
