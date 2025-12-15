@@ -36,4 +36,12 @@ Pozwala na:
 
 > Usuwanie użytkowników
 
+## Baza danych PostgreSQL
+Do przechowywania informacji o:
+> Użytkownikach
 
+> Produktach
+
+> Zamówieniach
+
+> Statusie zamówienia
