@@ -48,3 +48,16 @@ Do przechowywania informacji o:
 > Zamówieniach
 
 > Statusie zamówienia
+
+## Technologie
+> JavaScript
+
+> TypeScript
+
+> HTML
+
+> CSS
+
+> Docker
+
+> PostgreSQL
