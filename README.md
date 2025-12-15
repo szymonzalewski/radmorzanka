@@ -23,4 +23,17 @@ Logowanie posiada role user i admin
 > Rola - czy zwykły użytkoiwnik czy admin. Domyślnie jako user
 
 ## Strona admin
+Pozwala na:
+> Pobieranie zamówień
+
+> Edycje zamówień
+
+> Zmianę statusu zamównienia
+
+> Dodawanie produktów
+
+> Aktualizowanie produktów (zmiana nazwy, ilości i ceny)
+
+> Usuwanie użytkowników
+
 
