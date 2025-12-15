@@ -1,4 +1,4 @@
-# Radmorzanka projekt e-commarce sprzedż jedzenia online
+# Radmorzanka projekt e-commerce sprzedż jedzenia online
 
 ## Strona główna aplikacji
 Zawiera informacje ogólne o sklepie
